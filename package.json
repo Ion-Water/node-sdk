@@ -1,10 +1,9 @@
 {
   "name": "@ion-water/node-sdk",
   "version": "0.0.3",
-  "main": "index.js",
+  "main": "dist/index.js",
   "files": [
-    "dist/*",
-    "yarn.lock"
+    "dist/*"
   ],
   "repository": "git@github.com:Ion-Water/node-sdk.git",
   "author": "James Hay <jameshay@connectedfreight.com>",
@@ -14,6 +13,9 @@
   },
   "np": {
     "2fa": "false"
+  },
+  "scripts": {
+    "prepublishOnly": "tsc"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.23.0",
