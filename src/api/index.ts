@@ -1,6 +1,6 @@
 import { registerUser, RegisterUserRequest } from "./authorization";
 
-interface APIClientOptions {
+export interface APIClientOptions {
   hostname: string;
 }
 
