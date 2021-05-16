@@ -14,9 +14,11 @@ export interface RegisterUserMessage {
 
 type AuthorizationMessageData = RegisterUserMessage;
 
-export interface AuthorizationMessage {
+export interface AuthorizationMessage<
+  T extends AuthorizationMessageData = AuthorizationMessageData
+> {
   type: "authorization";
-  data: AuthorizationMessageData;
+  data: T;
 }
 
 export const AuthorizationMessageSchema = Joi.object({
@@ -34,16 +36,16 @@ export const RegisterUserMessageSchema = Joi.object({
   }).required(),
 }).required();
 
-export const isAuthorizationMessage = isValidSchema<AuthorizationMessage>(
-  AuthorizationMessageSchema
-);
+export const isAuthorizationMessage = isValidSchema<
+  AuthorizationMessage<AuthorizationMessageData>
+>(AuthorizationMessageSchema);
 export const isRegisterUserMessage = isValidSchema<RegisterUserMessage>(
   RegisterUserMessageSchema
 );
 
-export function newAuthorizationMessage(
-  data: AuthorizationMessageData
-): AuthorizationMessage {
+export function newAuthorizationMessage<
+  T extends AuthorizationMessageData = AuthorizationMessageData
+>(data: T): AuthorizationMessage<T> {
   return {
     type: "authorization",
     data,
@@ -53,7 +55,7 @@ export function newAuthorizationMessage(
 export function newRegisterUserMessage(
   username: string,
   password: string
-): AuthorizationMessage {
+): AuthorizationMessage<RegisterUserMessage> {
   return newAuthorizationMessage({
     type: "register_user",
     register_user: {

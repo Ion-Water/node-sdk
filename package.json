@@ -15,7 +15,8 @@
     "2fa": "false"
   },
   "scripts": {
-    "prepublishOnly": "tsc"
+    "prepublishOnly": "tsc",
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "axios": "^0.21.1",
