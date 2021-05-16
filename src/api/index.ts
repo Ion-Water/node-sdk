@@ -1,4 +1,11 @@
-import { registerUser, RegisterUserRequest } from "./authorization";
+import { LoginUserSuccess } from "../domain";
+import { SuccessMessage, AnySuccessData } from "../domain/success";
+import {
+  loginUser,
+  LoginUserRequest,
+  registerUser,
+  RegisterUserRequest,
+} from "./authorization";
 
 export interface APIClientOptions {
   hostname: string;
@@ -10,11 +17,29 @@ export class APIClient {
     this.options = options;
   }
 
-  static async registerUser(hostname: string, request: RegisterUserRequest) {
+  static async registerUser(
+    hostname: string,
+    request: RegisterUserRequest
+  ): Promise<SuccessMessage<AnySuccessData>> {
     return registerUser(hostname, request);
   }
 
-  async registerUser(request: RegisterUserRequest) {
+  static async loginUser(
+    hostname: string,
+    request: RegisterUserRequest
+  ): Promise<SuccessMessage<LoginUserSuccess>> {
+    return loginUser(hostname, request);
+  }
+
+  async registerUser(
+    request: RegisterUserRequest
+  ): Promise<SuccessMessage<AnySuccessData>> {
     return APIClient.registerUser(this.options.hostname, request);
+  }
+
+  async loginUser(
+    request: LoginUserRequest
+  ): Promise<SuccessMessage<LoginUserSuccess>> {
+    return APIClient.loginUser(this.options.hostname, request);
   }
 }
