@@ -5,7 +5,6 @@ import { AnySuccessData } from './success';
 export interface RegisterUserMessageBody {
   type: 'register_user';
   register_user: {
-    method: 'basic_auth';
     user: {
       username: string;
       password: string;
@@ -109,7 +108,6 @@ export function newRegisterUserMessage(
   return newAuthorizationMessage({
     type: 'register_user',
     register_user: {
-      method: 'basic_auth',
       user: {
         username,
         password,
