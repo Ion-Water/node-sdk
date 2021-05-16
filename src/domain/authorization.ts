@@ -1,11 +1,11 @@
-import Joi from "joi";
-import { isValidSchema } from "./common";
-import { AnySuccessData } from "./success";
+import Joi from 'joi';
+import { isValidSchema } from './common';
+import { AnySuccessData } from './success';
 
-export interface RegisterUserMessage {
-  type: "register_user";
+export interface RegisterUserMessageBody {
+  type: 'register_user';
   register_user: {
-    method: "basic_auth";
+    method: 'basic_auth';
     user: {
       username: string;
       password: string;
@@ -13,10 +13,10 @@ export interface RegisterUserMessage {
   };
 }
 
-export interface LoginUserMessage {
-  type: "login";
+export interface LoginUserMessageBody {
+  type: 'login';
   login: {
-    method: "basic_auth";
+    method: 'basic_auth';
     user: {
       username: string;
       password: string;
@@ -31,22 +31,22 @@ export interface LoginUserSuccess extends AnySuccessData {
   expiry: number;
 }
 
-type AuthorizationMessageData = RegisterUserMessage | LoginUserMessage;
+type AuthorizationMessageBody = RegisterUserMessageBody | LoginUserMessageBody;
 
 export interface AuthorizationMessage<
-  T extends AuthorizationMessageData = AuthorizationMessageData
+  T extends AuthorizationMessageBody = AuthorizationMessageBody
 > {
-  type: "authorization";
+  type: 'authorization';
   data: T;
 }
 
 export const AuthorizationMessageSchema = Joi.object({
-  type: Joi.string().allow("authorization").required(),
+  type: Joi.string().allow('authorization').required(),
   data: Joi.object().required(),
 }).required();
 
-export const RegisterUserMessageSchema = Joi.object({
-  type: Joi.string().allow("register_user").required(),
+export const RegisterUserMessageBodySchema = Joi.object({
+  type: Joi.string().allow('register_user').required(),
   register_user: Joi.object({
     user: Joi.object({
       username: Joi.string().required(),
@@ -55,8 +55,13 @@ export const RegisterUserMessageSchema = Joi.object({
   }).required(),
 }).required();
 
-export const LoginUserMessageSchema = Joi.object({
-  type: Joi.string().allow("login").required(),
+export const RegisterUserMessageSchema = Joi.object({
+  type: Joi.string().allow('authorization').required(),
+  data: RegisterUserMessageBodySchema,
+}).required();
+
+export const LoginUserMessageBodySchema = Joi.object({
+  type: Joi.string().allow('login').required(),
   login: Joi.object({
     user: Joi.object({
       username: Joi.string().required(),
@@ -65,23 +70,34 @@ export const LoginUserMessageSchema = Joi.object({
   }).required(),
 }).required();
 
-export const isAuthorizationMessage = isValidSchema<
-  AuthorizationMessage<AuthorizationMessageData>
->(AuthorizationMessageSchema);
+export const LoginUserMessageSchema = Joi.object({
+  type: Joi.string().allow('authorization').required(),
+  data: LoginUserMessageBodySchema,
+}).required();
 
-export const isRegisterUserMessage = isValidSchema<RegisterUserMessage>(
-  RegisterUserMessageSchema
+export const isAuthorizationMessage = isValidSchema<AuthorizationMessage<AuthorizationMessageBody>>(
+  AuthorizationMessageSchema
 );
 
-export const isLoginUserMessage = isValidSchema<LoginUserMessage>(
-  LoginUserMessageSchema
+export const isRegisterUserMessageBody = isValidSchema<RegisterUserMessageBody>(
+  RegisterUserMessageBodySchema
 );
+
+export const isLoginUserMessageBody = isValidSchema<LoginUserMessageBody>(
+  LoginUserMessageBodySchema
+);
+
+export const isLoginUserMessage =
+  isValidSchema<AuthorizationMessage<LoginUserMessageBody>>(LoginUserMessageSchema);
+
+export const isRegisterUserMessage =
+  isValidSchema<AuthorizationMessage<RegisterUserMessageBody>>(LoginUserMessageSchema);
 
 export function newAuthorizationMessage<
-  T extends AuthorizationMessageData = AuthorizationMessageData
+  T extends AuthorizationMessageBody = AuthorizationMessageBody
 >(data: T): AuthorizationMessage<T> {
   return {
-    type: "authorization",
+    type: 'authorization',
     data,
   };
 }
@@ -89,11 +105,11 @@ export function newAuthorizationMessage<
 export function newRegisterUserMessage(
   username: string,
   password: string
-): AuthorizationMessage<RegisterUserMessage> {
+): AuthorizationMessage<RegisterUserMessageBody> {
   return newAuthorizationMessage({
-    type: "register_user",
+    type: 'register_user',
     register_user: {
-      method: "basic_auth",
+      method: 'basic_auth',
       user: {
         username,
         password,
@@ -105,11 +121,11 @@ export function newRegisterUserMessage(
 export function newLoginUserMessage(
   username: string,
   password: string
-): AuthorizationMessage<LoginUserMessage> {
+): AuthorizationMessage<LoginUserMessageBody> {
   return newAuthorizationMessage({
-    type: "login",
+    type: 'login',
     login: {
-      method: "basic_auth",
+      method: 'basic_auth',
       user: {
         username,
         password,
