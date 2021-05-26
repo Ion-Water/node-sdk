@@ -1,10 +1,6 @@
-import { SuccessMessage } from "../domain/success";
-import axios from "axios";
-import {
-  LoginUserSuccess,
-  newLoginUserMessage,
-  newRegisterUserMessage,
-} from "../domain";
+import { SuccessMessage } from '../domain/success';
+import axios from 'axios';
+import { LoginUserSuccess, newLoginUserMessage, newRegisterUserMessage } from '../domain';
 
 export interface RegisterUserRequest {
   username: string;

@@ -30,17 +30,19 @@ export interface LoginUserSuccess extends AnySuccessData {
   expiry: number;
 }
 
-type AuthorizationMessageBody = RegisterUserMessageBody | LoginUserMessageBody;
+type Authentication = RegisterUserMessageBody | LoginUserMessageBody;
 
-export interface AuthorizationMessage<
-  T extends AuthorizationMessageBody = AuthorizationMessageBody
-> {
-  type: 'authorization';
+export const AuthenticationMessageTypeName = 'authentication';
+
+export type AuthenticationMessageType = typeof AuthenticationMessageTypeName;
+
+export interface AuthenticationMessage<T extends Authentication = Authentication> {
+  type: AuthenticationMessageType;
   data: T;
 }
 
 export const AuthorizationMessageSchema = Joi.object({
-  type: Joi.string().allow('authorization').required(),
+  type: Joi.string().allow(AuthenticationMessageTypeName).required(),
   data: Joi.object().required(),
 }).required();
 
@@ -48,14 +50,17 @@ export const RegisterUserMessageBodySchema = Joi.object({
   type: Joi.string().allow('register_user').required(),
   register_user: Joi.object({
     user: Joi.object({
-      username: Joi.string().required().min(2),
+      username: Joi.string()
+        .required()
+        .min(2)
+        .pattern(/[a-zA-Z0-9-_]/),
       password: Joi.string().required().min(12),
     }).required(),
   }).required(),
 }).required();
 
 export const RegisterUserMessageSchema = Joi.object({
-  type: Joi.string().allow('authorization').required(),
+  type: Joi.string().allow(AuthenticationMessageTypeName).required(),
   data: RegisterUserMessageBodySchema,
 }).required();
 
@@ -70,11 +75,11 @@ export const LoginUserMessageBodySchema = Joi.object({
 }).required();
 
 export const LoginUserMessageSchema = Joi.object({
-  type: Joi.string().allow('authorization').required(),
+  type: Joi.string().allow(AuthenticationMessageTypeName).required(),
   data: LoginUserMessageBodySchema,
 }).required();
 
-export const isAuthorizationMessage = isValidSchema<AuthorizationMessage<AuthorizationMessageBody>>(
+export const isAuthorizationMessage = isValidSchema<AuthenticationMessage<Authentication>>(
   AuthorizationMessageSchema
 );
 
@@ -87,16 +92,16 @@ export const isLoginUserMessageBody = isValidSchema<LoginUserMessageBody>(
 );
 
 export const isLoginUserMessage =
-  isValidSchema<AuthorizationMessage<LoginUserMessageBody>>(LoginUserMessageSchema);
+  isValidSchema<AuthenticationMessage<LoginUserMessageBody>>(LoginUserMessageSchema);
 
 export const isRegisterUserMessage =
-  isValidSchema<AuthorizationMessage<RegisterUserMessageBody>>(LoginUserMessageSchema);
+  isValidSchema<AuthenticationMessage<RegisterUserMessageBody>>(LoginUserMessageSchema);
 
-export function newAuthorizationMessage<
-  T extends AuthorizationMessageBody = AuthorizationMessageBody
->(data: T): AuthorizationMessage<T> {
+export function newAuthorizationMessage<T extends Authentication = Authentication>(
+  data: T
+): AuthenticationMessage<T> {
   return {
-    type: 'authorization',
+    type: AuthenticationMessageTypeName,
     data,
   };
 }
@@ -104,7 +109,7 @@ export function newAuthorizationMessage<
 export function newRegisterUserMessage(
   username: string,
   password: string
-): AuthorizationMessage<RegisterUserMessageBody> {
+): AuthenticationMessage<RegisterUserMessageBody> {
   return newAuthorizationMessage({
     type: 'register_user',
     register_user: {
@@ -119,7 +124,7 @@ export function newRegisterUserMessage(
 export function newLoginUserMessage(
   username: string,
   password: string
-): AuthorizationMessage<LoginUserMessageBody> {
+): AuthenticationMessage<LoginUserMessageBody> {
   return newAuthorizationMessage({
     type: 'login',
     login: {

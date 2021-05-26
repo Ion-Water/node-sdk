@@ -1,6 +1,6 @@
 import { LoginUserSuccess } from '../domain';
 import { SuccessMessage, AnySuccessData } from '../domain/success';
-import { loginUser, LoginUserRequest, registerUser, RegisterUserRequest } from './authorization';
+import { loginUser, LoginUserRequest, registerUser, RegisterUserRequest } from './authentication';
 
 export interface APIClientOptions {
   hostname: string;
