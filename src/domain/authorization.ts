@@ -48,8 +48,8 @@ export const RegisterUserMessageBodySchema = Joi.object({
   type: Joi.string().allow('register_user').required(),
   register_user: Joi.object({
     user: Joi.object({
-      username: Joi.string().required(),
-      password: Joi.string().required(),
+      username: Joi.string().required().min(2),
+      password: Joi.string().required().min(12),
     }).required(),
   }).required(),
 }).required();
